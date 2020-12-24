@@ -6,32 +6,60 @@ import com.cms.challenge.etl.StockPrices
 import org.apache.log4j.{LogManager, Logger}
 import org.apache.spark.sql.SparkSession
 
-object ETLJobOperator extends  Atributos{
+import com.cms.challenge.common.Args
+
+object ETLJobOperator extends Atributos {
+  private val LOGGER: Logger = LogManager.getLogger(msjLog)
+  val ETLCARGO = new EtlTableCargo()
+  val STOCK_PRICES = new StockPrices()
+
+
   def main(args: Array[String]): Unit = {
-    val PATH = "/home/cms/IdeaProjects/TestSeccionDos/src/test/resources/*"
-    val PATH_ALERT="/home/cms/Documentos/dataset/FileCSV/caso_norkom_salto2.csv"
-    val PATH_STOCK="/home/cms/Documentos/dataset/hist/historical_stock_prices.csv"
-    val ARG_DATE="2020-05-13"
-    val ETLCARGO = new EtlTableCargo()
-    val STOCK_PRICES=new StockPrices()
+    println("INICIANDO PROCESO")
+    val SPARK = initializeSparkSession(args)
+    println("INICIANDO SPARK")
+    if (Args.checkParamsBoolean.equals(false)) {
+      LOGGER.info("FINALIZA EJECUCION ANTICIPADA")
+      SPARK.stop()
+    } else {
+      LOGGER.info("VALIDACION DE PAMETROS EXITOSO")
+      STOCK_PRICES.stockPricesETL(Args.pathFile, Args.datePart, Args.tickerList, Args.numDay)(SPARK)
+      SPARK.stop()
+    }
+    LOGGER.info("*** FINISHED ****")
+  }
 
-    val LOGGER: Logger = LogManager
-      .getLogger(msjLog)
-
+  /**
+    *
+    * @param args
+    * @return
+    */
+  def initializeSparkSession(args: Array[String]): SparkSession = {
     LOGGER.info("Iniciando Proceso")
-    val SPARK = SparkSession
-      .builder()
-      .config("spark.service.user.postgresql.pass", "cmsdb")
-      .config("spark.service.user.postgresql.user", "cms")
-      .config("spark.service.user.postgresql.database", "db_test_daen")
-      .config("spark.service.user.postgresql.port", "5432")
-      .config("spark.service.user.postgresql.host", "localhost")
-      .master("local")
-      .appName("ETL - Data Pipeline - Test")
-      .getOrCreate()
-    //ETLCARGO.transformTableCargo(PATH)(SPARK)
-    //ETLCARGO.transformFieldAlertText(PATH_ALERT)(SPARK)
-    STOCK_PRICES.stockPricesETL(PATH_STOCK, ARG_DATE)(SPARK)
+    println("INICIANDO INITIALIZED")
+    Args.getArguments(args)
+    println("initialized Mode : " + Args.modeExecution)
+    println("Initialized " + Args.processName)
 
+    if (Args.checkParamsBoolean.equals(true)) {
+      SparkSession
+        .builder()
+        .config("spark.service.user.postgresql.pass", "cmsdb")
+        .config("spark.service.user.postgresql.user", "postgres")
+        .config("spark.service.user.postgresql.database", "challengedb")
+        .config("spark.service.user.postgresql.port", "5432")
+        .config("spark.service.user.postgresql.host", "localhost")
+        .master(Args.modeExecution)
+        .appName(Args.processName)
+        .getOrCreate()
+    }
+    else {
+      SparkSession
+        .builder()
+        .master("local")
+        .appName("Process Failed")
+        .getOrCreate()
+    }
   }
 }
+
