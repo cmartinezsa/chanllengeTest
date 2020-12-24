@@ -52,6 +52,13 @@ class Writer extends Atributos {
   def saveResultJDBC(df: DataFrame, saveOption: String, jdbcUrl: String,
                      jdbcUser: String, jdbcPassword: String,
                      tableToWrite: String): Unit = {
+
+    println(" Metodo saveResultJDBC --> ")
+    println("saveOption " + saveOption )
+    println("jdbcUrl " + jdbcUrl )
+    println("user " +jdbcUser )
+    println("password :" + jdbcPassword )
+    println("Tabla: " + tableToWrite )
     val connectionProperties = new Properties
     connectionProperties.put("user", jdbcUser)
     connectionProperties.put("password", jdbcPassword)
@@ -59,10 +66,14 @@ class Writer extends Atributos {
       df.write
         .mode(saveOption)
         .jdbc(jdbcUrl, tableToWrite, connectionProperties)
+      logger.info("WRITE TO POSTGRES SUCESSFULL")
     }
     catch {
       case ex: IOException =>
         logger.error(s"Check the path about $ex ")
+      case psql: org.postgresql.util.PSQLException=>
+        logger.error(s"Check the database conecction $psql ")
+
     }
   }
 }
