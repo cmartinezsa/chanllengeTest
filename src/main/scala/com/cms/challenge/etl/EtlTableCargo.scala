@@ -14,15 +14,15 @@ class EtlTableCargo() extends Atributos {
     .getLogger("ETL - Data Pipeline - Test")
 
   /**
-   *
-   * @param CSVFilePath
-   * @param spark
-   */
-
+    *
+    * @param CSVFilePath
+    * @param spark
+    */
 
 
   def transformFieldAlertText(CSVFilePath: String)
                              (implicit spark: SparkSession): Unit = {
+    /*
     try {
       val dfCargo = reader.readCSVFile(CSVFilePath)
         .select("*")
@@ -98,5 +98,8 @@ class EtlTableCargo() extends Atributos {
         to_date(col(DateField), "yyyy MMMM dd E"))
       .otherwise("Unknown Format")
       .alias(DateField)
+  }
+
+     */
   }
 }
