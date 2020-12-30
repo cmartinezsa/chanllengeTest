@@ -1,16 +1,6 @@
 package com.cms.challenge.common
 
 trait Atributos {
-  val id = "id"
-  val name = "name"
-  val companyName = "company_name"
-  val companyId = "company_id"
-  val amount = "amount"
-  val status = "status"
-  val createdAt = "created_at"
-  val paidAt = "paid_at"
-  val updateAt = "updated_at"
-  val pathToSaveResultFile = "/home/cms/Documentos/dataset/test_data_engineer1"
   val saveModeAppend = "append"
   val saveModeOverwrite = "overwrite"
   val formatParquet = "parquet"
@@ -27,15 +17,19 @@ trait Atributos {
   val dateFormatField = "date_formated"
   var pathFile = ""
   var datePart = ""
-  var numDay=0
+  var numDay = 0
   var processName = ""
   var modeExecution = ""
   val formatDate = "yyyy-MM-dd"
   val castDate = "date"
-  var checkParamsBoolean = false
+  var checkParams = false
   var tickerList = List(toString)
-  var dateStartToExtract="start_date"
-  val innerJoin="inner"
+  var dateStartToExtract = "start_date"
+  val innerJoin = "inner"
+  val postgresPort = "spark.service.user.postgresql.port"
+  val postgresHost = "spark.service.user.postgresql.host"
+  val postgresUser = "spark.service.user.postgresql.user"
+  val postgresPassword = "spark.service.user.postgresql.pass"
+  val postgresDatabase = "spark.service.user.postgresql.database"
 
- //var target="hist_stock_prices"
 }

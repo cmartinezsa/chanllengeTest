@@ -10,10 +10,14 @@ import java.lang.ArrayIndexOutOfBoundsException
 object Args extends Atributos {
 
   val logger: Logger = LogManager.getLogger("ETL - Data Pipeline - Test")
-  var target=""
+  var target = ""
 
+  /**
+    *
+    * @param args received
+    * @return Booolean value
+    */
   def getArguments(args: Array[String]): Boolean = {
-    println("METODO GETARGUMENTS")
     try {
       println(args.length)
       pathFile = args(0)
@@ -22,39 +26,27 @@ object Args extends Atributos {
       numDay = args(3).toInt
       processName = args(4)
       modeExecution = args(5)
-      target=args(6)
-
+      target = args(6)
 
       if (args.length < 7) {
-        logger.info("Check number of params, required 6 arguments")
-        println("Check number of params, required 6 arguments")
-
-
-        checkParamsBoolean
+        logger.info("Check number of params, required 7 arguments")
+        checkParams
       }
       else {
-        println("pathFile :" + pathFile)
-        println("datePart :" + datePart)
-        println("tickerList :" + tickerList)
-        println("NumDay :" + numDay)
-        println("processName :" + processName)
-        println("ModeExecution :" + modeExecution)
-        println("Target :" + target)
-
-        logger.info("Parameters received")
-        logger.info("Path: " + pathFile + " Date: " + datePart + " Ticker : " + tickerList + " NumDay: " + numDay)
-        println("Path: " + pathFile + " Date: " + datePart + " Ticker : " + tickerList + " NumDay: " + numDay)
-        checkParamsBoolean = true
-
-        return checkParamsBoolean
+        logger.info(s"Parameters received => pathFile : $pathFile datePart: $datePart" +
+          s" TickerList: $tickerList NumDay: $numDay ProcessName: $processName " +
+          s" ModeExecution: $modeExecution  Target: $target")
+        checkParams = true
+        return checkParams
       }
     }
     catch {
       case e: ArrayIndexOutOfBoundsException =>
         logger.info("required 7 parameters " + e)
         println("required 7  parameters " + e)
-        checkParamsBoolean
-
+        checkParams
+      case _ =>
+        checkParams
     }
   }
 }

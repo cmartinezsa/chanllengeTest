@@ -3,21 +3,17 @@ package com.cms.challenge.common
 import org.apache.log4j.{LogManager, Logger}
 import org.apache.spark.sql.{AnalysisException, DataFrame, SparkSession}
 
-
-/**
-  *
-  */
 class Reader extends Atributos {
   val logger: Logger = LogManager.getLogger("ETL - Data Pipeline - Test")
   val filter = new Filter()
 
   /**
     *
-    * @param pathFile
-    * @param spark
-    * @return
+    * @param pathFile from origin the dataset csv.
+    * @param spark    Active
+    * @return DataFrame with the data.
     */
-  def readCSVFile(pathFile: String, date_part: String, ticker: List[String], numDay: Int)
+  def readCSVFile(pathFile: String, datePart: String, ticker: List[String], numDay: Int)
                  (implicit spark: SparkSession): DataFrame = {
     val dfEmpty = spark.emptyDataFrame
     try {
@@ -28,23 +24,8 @@ class Reader extends Atributos {
         .option("sep", ",")
         .csv(pathFile)
 
-      println("readCSVFile, read Finished, continue Filter")
-
-      val dfFiltered = filter.getFilteredOperations(df, ticker, numDay, date_part)
-        .persist()
-
-      val dfShow=dfFiltered.count()
-        println("Numero de registros  " + dfShow)
-
-      if (!dfFiltered.isEmpty){
-        println("**** EL DATA FRAME FILTRADO SI CONTIENE DATOS ")
-        dfFiltered
-
-      }else{
-        println("**** EL DATA FRAME FILTRADO NO CONTIENE DATOS ")
-        dfEmpty
-      }
-
+      val dfFiltered = filter.getFilteredOperations(df, ticker, numDay, datePart)
+      dfFiltered
     }
     catch {
       case ex: AnalysisException =>
@@ -53,4 +34,18 @@ class Reader extends Atributos {
     }
   }
 
+  def readParquetFile(pathFileParquet: String)(implicit spark: SparkSession): DataFrame = {
+    val dfEmpty = spark.emptyDataFrame
+    try {
+      val df = spark
+        .read
+        .parquet(pathFileParquet)
+      df
+    }
+    catch {
+      case ex: AnalysisException =>
+        logger.error(s"Check path about $ex ")
+        dfEmpty
+    }
+  }
 }
